@@ -3,6 +3,7 @@ package com.Chatting.Application.controller;
 import com.Chatting.Application.dto.MessagesDto;
 import com.Chatting.Application.dto.RoomDto;
 import com.Chatting.Application.repository.RoomRepository;
+import com.Chatting.Application.service.MessagesService;
 import com.Chatting.Application.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,11 +18,13 @@ import java.util.List;
 @RequestMapping("/api/v1/rooms")
 @RequiredArgsConstructor
 @Slf4j
+@CrossOrigin("http://localhost:5173")
 // this Controller will handle Room Creation
 public class RoomController {
 
     private final RoomRepository roomRepository; // using this we can check whether room already there or not
     private final RoomService roomService;
+    private final MessagesService messagesService;
 
     // create room
     @PostMapping
@@ -50,7 +53,35 @@ public class RoomController {
         return ResponseEntity.ok(roomDto);
     }
 
-    // get message of room with pagination
+    // Save message in a room
+    @PostMapping("/{roomId}/messages")
+    public ResponseEntity<?> saveMessage(
+            @PathVariable String roomId,
+            @RequestBody MessagesDto messagesDto) {
+        try {
+            log.info("Saving message in roomId: {}, sender: {}", roomId, messagesDto.getSender());
+
+            // Check if room exists
+            if (roomRepository.findByRoomId(roomId).isEmpty()) {
+                log.warn("Room with Id: {} not found!", roomId);
+                return ResponseEntity.badRequest().body("Room with Id: " + roomId + " not found!");
+            }
+
+            // Set roomId in DTO from path variable
+            messagesDto.setRoomId(roomId);
+
+            // Save message using service
+            MessagesDto savedMessage = messagesService.saveMessage(messagesDto);
+            log.info("Message saved successfully with id: {}", savedMessage.getId());
+            return new ResponseEntity<>(savedMessage, HttpStatus.CREATED);
+        } catch (Exception e) {
+            log.error("Error saving message: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error saving message: " + e.getMessage());
+        }
+    }
+
+    // get a message of room with pagination
     @GetMapping("/{roomId}/messages")
     public ResponseEntity<?> getMessages(
             @PathVariable String roomId,
