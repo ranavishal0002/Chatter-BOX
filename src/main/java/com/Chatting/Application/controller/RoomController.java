@@ -1,5 +1,6 @@
 package com.Chatting.Application.controller;
 
+import com.Chatting.Application.config.AppConstants;
 import com.Chatting.Application.dto.MessagesDto;
 import com.Chatting.Application.dto.RoomDto;
 import com.Chatting.Application.repository.RoomRepository;
@@ -18,7 +19,7 @@ import java.util.List;
 @RequestMapping("/api/v1/rooms")
 @RequiredArgsConstructor
 @Slf4j
-@CrossOrigin("http://localhost:5173")
+@CrossOrigin(AppConstants.Frontend_BASE_URL)
 // this Controller will handle Room Creation
 public class RoomController {
 

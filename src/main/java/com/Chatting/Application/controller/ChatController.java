@@ -1,5 +1,6 @@
 package com.Chatting.Application.controller;
 
+import com.Chatting.Application.config.AppConstants;
 import com.Chatting.Application.dto.MessagesDto;
 import com.Chatting.Application.entities.Room;
 import com.Chatting.Application.repository.RoomRepository;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import static reactor.netty.http.HttpConnectionLiveness.log;
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin("http://localhost:5173")
+@CrossOrigin(AppConstants.Frontend_BASE_URL)
 // This Controller will handle chats
 public class ChatController {
 
